@@ -4,7 +4,7 @@ services:
     image: ${IMAGE}
     command: ./run
     deploy:
-      replicas: 1
+      replicas: 3
       update_config:
         order: start-first
         failure_action: rollback
