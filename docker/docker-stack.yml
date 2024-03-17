@@ -2,7 +2,7 @@ version: "3.8"
 services:
   app:
     image: ${IMAGE}
-    command: 
+    command: ./run
     deploy:
       replicas: 1
       update_config:
