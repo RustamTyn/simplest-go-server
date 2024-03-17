@@ -23,3 +23,17 @@ jobs:
         id: ecr-push
         env:
           IMAGE: ${{ steps.ecr-login.outputs.registry }}/simplest-go-server:${{ github.run_id }}
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - uses: aws-actions/amazon-ecr-login@v2
+      - run: docker stack deploy -c docker/docker-stack.yml --with-registry-auth --prune simplest-go-server
+        env:
+          IMAGE: ${{ needs.build.outputs.image }}
