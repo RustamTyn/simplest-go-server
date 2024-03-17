@@ -3,7 +3,7 @@ services:
   test_service:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
     container_name: test_service
     working_dir: /app
     ports:
