@@ -1,0 +1,25 @@
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.ecr-push.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - uses: aws-actions/amazon-ecr-login@v2
+        id: ecr-login
+      - run: |
+          docker build . -t $IMAGE -f docker/Dockerfile
+          docker push $IMAGE
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+        id: ecr-push
+        env:
+          IMAGE: ${{ steps.ecr-login.outputs.registry }}/simplest-go-server:${{ github.run_id }}
